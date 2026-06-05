@@ -1,12 +1,12 @@
 {
   "name": "Athlete Hub",
   "short_name": "Athlete Hub",
-  "description": "Personal athlete tracking \u2014 habits, workouts, mobility, AI coach",
-  "start_url": "/Athlete-hub/index.html",
+  "description": "Habits, workouts, mobility & AI coach",
+  "start_url": "/Athlete-hub/",
   "scope": "/Athlete-hub/",
   "display": "standalone",
-  "background_color": "#080808",
-  "theme_color": "#080808",
+  "background_color": "#090909",
+  "theme_color": "#090909",
   "icons": [
     {
       "src": "icon-192.png",
