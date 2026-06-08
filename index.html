@@ -226,32 +226,12 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent;background:none}
       </div>
     </div>
 
-    <!-- ── WORKOUT ────────────────────────────────── -->
+        <!-- ── WORKOUT ────────────────────────────────── -->
     <div id="s-workout" class="screen">
-      <div id="workout-home" class="page-wrap scroll-content">
-        <div class="page-eyebrow">4-Day Split</div>
-        <div class="page-title">Lift <span class="hl">Log</span></div>
-        <div class="injury-banner" style="margin-bottom:16px">
-          <div class="injury-title">KNEE PROTOCOL</div>
-          <div class="injury-body">Lower body modified — avoid deep knee flexion until MRI clears.</div>
-        </div>
-        <div id="workout-day-list"></div>
-        <div style="margin-top:8px" id="workout-hist"></div>
-      </div>
-      <div id="workout-logger" style="display:none" class="page-wrap scroll-content">
-        <button class="btn-back tap" onclick="closeLogger()">
-          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5L1.5 7.5L7.5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Back
-        </button>
-        <div class="page-eyebrow" id="logger-eyebrow">Session</div>
-        <div class="page-title" style="color:var(--orange);font-size:28px" id="logger-title"></div>
-        <div id="logger-exercises"></div>
-        <div style="margin-top:16px">
-          <div class="input-label" style="margin-bottom:6px">Session Notes</div>
-          <textarea id="logger-notes" class="notes-input" rows="3" placeholder="How did it feel? PRs? Pain?"></textarea>
-        </div>
-        <button class="btn btn-full btn-orange tap" style="margin-top:14px" onclick="saveWorkout()">Save Session</button>
-      </div>
+      <div id="workout-home"></div>
+      <div id="workout-logger" style="display:none"></div>
+      <div id="workout-editor" style="display:none"></div>
+      <div id="session-detail" style="display:none"></div>
     </div>
 
     <!-- ── MOBILITY ───────────────────────────────── -->
