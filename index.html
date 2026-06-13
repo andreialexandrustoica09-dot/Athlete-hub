@@ -226,12 +226,65 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent;background:none}
       </div>
     </div>
 
-        <!-- ── WORKOUT ────────────────────────────────── -->
+            <!-- ── WORKOUT ────────────────────────────────── -->
     <div id="s-workout" class="screen">
-      <div id="workout-home"></div>
-      <div id="workout-logger" style="display:none"></div>
-      <div id="workout-editor" style="display:none"></div>
-      <div id="session-detail" style="display:none"></div>
+      <!-- Home: program list -->
+      <div id="wv-home" class="page-wrap scroll-content">
+        <div class="page-eyebrow">Training</div>
+        <div class="page-title">Lift <span class="hl">Log</span></div>
+        <div class="injury-banner" style="margin-bottom:16px">
+          <div class="injury-title">KNEE PROTOCOL</div>
+          <div class="injury-body">Lower body modified — avoid deep knee flexion until MRI clears.</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="section-label" style="margin:0">Programs</div>
+          <button onclick="wvShow('editor');startNewProg()" style="background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600">+ New</button>
+        </div>
+        <div id="w-prog-list"></div>
+        <div id="w-hist-section"></div>
+      </div>
+      <!-- Logger: active session -->
+      <div id="wv-logger" class="page-wrap scroll-content" style="display:none">
+        <button class="btn-back tap" onclick="wvShow('home')">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5L1.5 7.5L7.5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Back
+        </button>
+        <div class="page-eyebrow" id="wl-date"></div>
+        <div class="page-title" style="color:var(--orange);font-size:28px;margin-bottom:20px" id="wl-title"></div>
+        <div id="wl-exercises"></div>
+        <div style="margin-top:16px">
+          <div class="input-label" style="margin-bottom:6px">Session Notes</div>
+          <textarea id="wl-notes" class="notes-input" rows="3" placeholder="How did it feel? PRs? Pain?"></textarea>
+        </div>
+        <button class="btn btn-full btn-orange tap" style="margin-top:14px" onclick="saveSession()">Save Session</button>
+      </div>
+      <!-- Editor: customize program -->
+      <div id="wv-editor" class="page-wrap scroll-content" style="display:none">
+        <button class="btn-back tap" onclick="wvShow('home');renderWHome()">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5L1.5 7.5L7.5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Programs
+        </button>
+        <div class="page-eyebrow">Customize</div>
+        <div class="page-title" style="font-size:28px;margin-bottom:16px">Edit Program</div>
+        <div style="margin-bottom:16px">
+          <div class="input-label" style="margin-bottom:6px">Program Name</div>
+          <input id="ed-name" class="notes-input" style="border-radius:10px;font-size:15px;font-weight:600" placeholder="e.g. Day 1 – Push">
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div class="section-label" style="margin:0">Exercises</div>
+          <button onclick="edAddEx()" style="background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600">+ Add</button>
+        </div>
+        <div id="ed-ex-list"></div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn btn-full tap" style="background:var(--accent);color:#000;flex:2" onclick="edSave()">Save Program</button>
+          <button id="ed-delete-btn" class="btn tap" style="background:rgba(255,69,58,.12);color:var(--red);border:1px solid rgba(255,69,58,.25);padding:14px 18px;border-radius:10px;font-size:14px;font-weight:600;display:none" onclick="edDelete()">Delete</button>
+        </div>
+      </div>
+      <!-- Session detail view -->
+      <div id="wv-detail" class="page-wrap scroll-content" style="display:none">
+        <button class="btn-back tap" onclick="wvShow('home');renderWHome()">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5L1.5 7.5L7.5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> History
+        </button>
+        <div id="wd-content"></div>
+      </div>
     </div>
 
     <!-- ── MOBILITY ───────────────────────────────── -->
@@ -344,12 +397,6 @@ const HABITS=[
   {id:'calories',label:'3200 kcal hit',icon:'🍽',cat:'Nutrition'},
 ];
 
-const WORKOUTS={
-  'Day 1 – Squat':{color:'#f5a524',exs:['Squat 1×5 + 3×5(−10%)','Bench Press 3×6','Assisted Pull-ups 3×6–8','Lateral Raises 3×12–15','Core 3 sets']},
-  'Day 2 – Upper':{color:'#f5a524',exs:['Bench Press 1×5 + 3×5','Kneeling OHP 3×5','Bent-Over Row 4×8','Tricep Pushdown 3×10–12','Hammer Curl 3×10–12']},
-  'Day 3 – Deadlift':{color:'#f5a524',exs:['Deadlift 1×3 + 3×3(−10%)','Bench Press 4×6','Cable Row 3×10','Assisted Pull-ups 3×AMRAP']},
-  'Day 4 – Leg/Back':{color:'#f5a524',exs:['Paused Squat 3×5','RDL 3×8','Lat Pulldown 3×8–10','Lateral Raise 3×15']},
-};
 
 const MOB={
   daily:{label:'Daily Foundation',sub:'Every morning',dur:'10–12 min',color:'#a8e63d',exs:['90/90 Hip Rotations — 2×60s','Cat-Cow + Thread the Needle — 10 ea','World\'s Greatest Stretch — 5 ea side','Deep Squat Hold — 3×30s','Wall Angels — 2×10']},
@@ -482,57 +529,369 @@ function toggleH(id){
 }
 
 /* ── Workout ─────────────────────────────────────── */
-let curWorkout=null,logExs=[];
-function renderWorkout(){
-  document.getElementById('workout-day-list').innerHTML=Object.entries(WORKOUTS).map(([name,w])=>`
-    <div class="workout-card tap" onclick="startWorkout(${JSON.stringify(name)})">
-      <div>
-        <div class="wc-title">${name}</div>
-        <div class="wc-sub">${w.exs.length} exercises</div>
-      </div>
-      <button class="btn btn-orange tap" style="padding:9px 16px;font-size:13px;pointer-events:none">Start</button>
-    </div>`).join('');
+// ── Workout System ──────────────────────────────────────────────────────────
 
-  const wh=document.getElementById('workout-hist');
-  if(!workouts.length){wh.innerHTML='';return;}
-  wh.innerHTML=`<div class="section-label" style="margin:4px 0 10px">History</div>`+
-    [...workouts].reverse().slice(0,5).map(w=>`
-      <div class="hist-row">
-        <div><div class="hist-name">${w.name}</div>${w.notes?`<div class="hist-note">${w.notes}</div>`:''}</div>
+const DEFAULT_PROGRAMS = [
+  {id:'p1',name:'Day 1 – Squat',exercises:[
+    {id:'p1e1',name:'Squat',sets:'1×5 + 3×5',note:'−10% backoffs'},
+    {id:'p1e2',name:'Bench Press',sets:'3×6',note:''},
+    {id:'p1e3',name:'Assisted Pull-ups',sets:'3×6–8',note:''},
+    {id:'p1e4',name:'Lateral Raises',sets:'3×12–15',note:''},
+    {id:'p1e5',name:'Core Work',sets:'3 sets',note:''},
+  ]},
+  {id:'p2',name:'Day 2 – Upper',exercises:[
+    {id:'p2e1',name:'Bench Press',sets:'1×5 + 3×5',note:''},
+    {id:'p2e2',name:'Kneeling OHP',sets:'3×5',note:''},
+    {id:'p2e3',name:'Bent-Over Row',sets:'4×8',note:''},
+    {id:'p2e4',name:'Tricep Pushdown',sets:'3×10–12',note:''},
+    {id:'p2e5',name:'Hammer Curl',sets:'3×10–12',note:''},
+  ]},
+  {id:'p3',name:'Day 3 – Deadlift',exercises:[
+    {id:'p3e1',name:'Deadlift',sets:'1×3 + 3×3',note:'−10% backoffs'},
+    {id:'p3e2',name:'Bench Press',sets:'4×6',note:''},
+    {id:'p3e3',name:'Cable Row',sets:'3×10',note:''},
+    {id:'p3e4',name:'Assisted Pull-ups',sets:'3×AMRAP',note:''},
+  ]},
+  {id:'p4',name:'Day 4 – Leg/Back',exercises:[
+    {id:'p4e1',name:'Paused Squat',sets:'3×5',note:''},
+    {id:'p4e2',name:'RDL',sets:'3×8',note:''},
+    {id:'p4e3',name:'Lat Pulldown',sets:'3×8–10',note:''},
+    {id:'p4e4',name:'Lateral Raise',sets:'3×15',note:''},
+  ]},
+];
+
+let programs = ld('ah_progs', null);
+if (!programs) { programs = JSON.parse(JSON.stringify(DEFAULT_PROGRAMS)); sv('ah_progs', programs); }
+
+let activeProgId = null;   // program being logged
+let sessionSets  = {};     // exId -> [{weight,reps,rpe}]
+let editProgId   = null;   // program being edited
+
+// Sub-screen manager
+function wvShow(view) {
+  ['home','logger','editor','detail'].forEach(v => {
+    const el = document.getElementById('wv-'+v);
+    if (el) el.style.display = v === view ? 'block' : 'none';
+  });
+}
+
+function renderWorkout() { wvShow('home'); renderWHome(); }
+
+function renderWHome() {
+  // Programs
+  const pl = document.getElementById('w-prog-list');
+  if (!pl) return;
+  pl.innerHTML = programs.map(p => {
+    const lastSess = [...workouts].reverse().find(w => w.progId === p.id);
+    const lastDate = lastSess ? lastSess.date : null;
+    return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <div style="font-size:17px;font-weight:700;color:var(--orange)">${p.name}</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">${p.exercises.length} exercises${lastDate ? ' · Last: '+lastDate : ''}</div>
+        </div>
+        <div style="display:flex;gap:7px;flex-shrink:0">
+          <button onclick="openEditor('${p.id}')" style="background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:600">Edit</button>
+          <button onclick="openLogger('${p.id}')" style="background:var(--orange);color:#000;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:600">Start</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">
+        ${p.exercises.map(e=>`<span style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--text2)">${e.name}</span>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  // History
+  const hs = document.getElementById('w-hist-section');
+  if (!hs) return;
+  if (!workouts.length) { hs.innerHTML = ''; return; }
+  hs.innerHTML = `<div class="section-label" style="margin:16px 0 10px">Recent Sessions</div>` +
+    [...workouts].reverse().slice(0,8).map(w => {
+      const prog = programs.find(p => p.id === w.progId);
+      const setCount = Object.values(w.sets||{}).reduce((a,s)=>a+s.length,0);
+      const highlights = Object.entries(w.sets||{}).map(([exId,sets])=>{
+        const ex = prog?.exercises.find(e=>e.id===exId);
+        const best = sets.reduce((a,s)=>Math.max(a,+s.weight||0),0);
+        return (ex && best>0) ? `${ex.name} ${best}kg` : null;
+      }).filter(Boolean).slice(0,3).join(' · ');
+      return `<div class="hist-row tap" onclick="openDetail('${w.id}')">
+        <div style="flex:1">
+          <div class="hist-name">${w.progName}</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:3px">${setCount} sets${highlights?' · '+highlights:''}</div>
+          ${w.notes?`<div class="hist-note" style="margin-top:3px">${w.notes}</div>`:''}
+        </div>
         <div class="hist-date">${w.date}</div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 }
 
-function startWorkout(name){
-  curWorkout=name;logExs=WORKOUTS[name].exs;
-  document.getElementById('logger-eyebrow').textContent=new Date().toLocaleDateString('en',{month:'short',day:'numeric'});
-  document.getElementById('logger-title').textContent=name;
-  document.getElementById('logger-notes').value='';
-  document.getElementById('logger-exercises').innerHTML=logExs.map((ex,i)=>`
-    <div class="ex-card">
-      <div class="ex-name">${ex}</div>
-      <div style="display:flex;gap:10px">
-        <div style="flex:1"><div class="input-label">Weight kg</div><input class="num-input" type="number" inputmode="decimal" id="w${i}" placeholder="—"></div>
-        <div style="flex:1"><div class="input-label">Reps</div><input class="num-input" type="number" inputmode="numeric" id="r${i}" placeholder="—"></div>
+// ── Session Logger ────────────────────────────────
+function openLogger(progId) {
+  activeProgId = progId;
+  sessionSets = {};
+  const prog = programs.find(p=>p.id===progId);
+  if (!prog) return;
+
+  // Pre-fill sets with last session weights
+  const lastSess = [...workouts].reverse().find(w=>w.progId===progId);
+  prog.exercises.forEach(ex => {
+    const prevSets = lastSess?.sets?.[ex.id] || [];
+    const lastW = prevSets.length ? prevSets[prevSets.length-1].weight : '';
+    sessionSets[ex.id] = [{ weight: lastW, reps: '', rpe: '' }];
+  });
+
+  document.getElementById('wl-date').textContent = new Date().toLocaleDateString('en',{weekday:'long',month:'short',day:'numeric'});
+  document.getElementById('wl-title').textContent = prog.name;
+  document.getElementById('wl-notes').value = '';
+  renderLoggerExercises(prog, lastSess?.sets||{});
+  wvShow('logger');
+}
+
+function renderLoggerExercises(prog, lastSets) {
+  const cont = document.getElementById('wl-exercises');
+  if (!cont) return;
+  cont.innerHTML = prog.exercises.map(ex => {
+    const prev = lastSets[ex.id] || [];
+    return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <div style="font-size:15px;font-weight:700">${ex.name}</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">${ex.sets}${ex.note?' · '+ex.note:''}</div>
+        </div>
+        ${prev.length?`<div style="font-size:11px;color:var(--text3);text-align:right;line-height:1.6">
+          <div style="font-weight:600;color:var(--text2);margin-bottom:2px">Last session</div>
+          ${prev.map(s=>`${s.weight||'—'}kg × ${s.reps||'—'}`).join('<br>')}
+        </div>`:''}
+      </div>
+      <!-- Set header -->
+      <div style="display:grid;grid-template-columns:20px 1fr 1fr 1fr 28px;gap:6px;margin-bottom:5px;padding:0 2px">
+        <div></div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:center">kg</div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:center">Reps</div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:center">RPE</div>
+        <div></div>
+      </div>
+      <div id="setrows-${ex.id}">${renderSetRows(ex.id)}</div>
+      <button onclick="addSet('${ex.id}')" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:8px;color:var(--text2);font-size:13px;font-weight:600;margin-top:8px">+ Set</button>
+    </div>`;
+  }).join('');
+}
+
+function renderSetRows(exId) {
+  const sets = sessionSets[exId] || [];
+  return sets.map((s,i) => `
+    <div style="display:grid;grid-template-columns:20px 1fr 1fr 1fr 28px;gap:6px;margin-bottom:6px;align-items:center">
+      <div style="font-size:12px;font-weight:700;color:var(--text3);text-align:center">${i+1}</div>
+      <input type="number" inputmode="decimal" placeholder="kg" value="${s.weight||''}"
+        style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 6px;color:var(--text);font-size:14px;font-weight:600;text-align:center;width:100%"
+        oninput="updSet('${exId}',${i},'weight',this.value)">
+      <input type="number" inputmode="numeric" placeholder="reps" value="${s.reps||''}"
+        style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 6px;color:var(--text);font-size:14px;font-weight:600;text-align:center;width:100%"
+        oninput="updSet('${exId}',${i},'reps',this.value)">
+      <input type="number" inputmode="decimal" placeholder="—" value="${s.rpe||''}" min="6" max="10" step="0.5"
+        style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 6px;color:var(--text);font-size:14px;font-weight:600;text-align:center;width:100%"
+        oninput="updSet('${exId}',${i},'rpe',this.value)">
+      <button onclick="rmSet('${exId}',${i})" style="background:none;border:none;color:var(--text3);font-size:20px;line-height:1;padding:2px;font-weight:300">×</button>
+    </div>`).join('');
+}
+
+function updSet(exId, i, field, val) {
+  if (!sessionSets[exId]) sessionSets[exId] = [];
+  if (!sessionSets[exId][i]) sessionSets[exId][i] = {};
+  sessionSets[exId][i][field] = val;
+}
+
+function addSet(exId) {
+  if (!sessionSets[exId]) sessionSets[exId] = [];
+  const last = sessionSets[exId][sessionSets[exId].length-1];
+  sessionSets[exId].push({ weight: last?.weight||'', reps:'', rpe:'' });
+  const el = document.getElementById('setrows-'+exId);
+  if (el) el.innerHTML = renderSetRows(exId);
+}
+
+function rmSet(exId, i) {
+  if (!sessionSets[exId] || sessionSets[exId].length <= 1) return;
+  sessionSets[exId].splice(i,1);
+  const el = document.getElementById('setrows-'+exId);
+  if (el) el.innerHTML = renderSetRows(exId);
+}
+
+function saveSession() {
+  const prog = programs.find(p=>p.id===activeProgId);
+  if (!prog) return;
+  // Harvest live DOM values
+  prog.exercises.forEach(ex => {
+    const rows = document.getElementById('setrows-'+ex.id);
+    if (!rows) return;
+    const inputs = rows.querySelectorAll('input');
+    const perSet = 3;
+    sessionSets[ex.id] = [];
+    for (let i=0; i<inputs.length; i+=perSet) {
+      sessionSets[ex.id].push({
+        weight: inputs[i]?.value||'',
+        reps:   inputs[i+1]?.value||'',
+        rpe:    inputs[i+2]?.value||'',
+      });
+    }
+  });
+  workouts.push({
+    id: 'w'+Date.now(),
+    progId: prog.id,
+    progName: prog.name,
+    date: new Date().toLocaleDateString('en',{month:'short',day:'numeric',year:'numeric'}),
+    sets: JSON.parse(JSON.stringify(sessionSets)),
+    notes: document.getElementById('wl-notes')?.value||'',
+  });
+  sv('ah2_workouts', workouts);
+  wvShow('home');
+  renderWHome();
+  showToast('Session saved 🏋');
+}
+
+// ── Program Editor ─────────────────────────────────
+function startNewProg() {
+  editProgId = 'p'+Date.now();
+  programs.push({ id: editProgId, name: 'New Program', exercises: [] });
+  sv('ah_progs', programs);
+  renderEditor();
+}
+
+function openEditor(progId) {
+  editProgId = progId;
+  wvShow('editor');
+  renderEditor();
+}
+
+function renderEditor() {
+  const prog = programs.find(p=>p.id===editProgId);
+  if (!prog) return;
+  document.getElementById('ed-name').value = prog.name;
+  const delBtn = document.getElementById('ed-delete-btn');
+  if (delBtn) delBtn.style.display = programs.length > 1 ? 'block' : 'none';
+  renderEdExList(prog);
+}
+
+function renderEdExList(prog) {
+  const cont = document.getElementById('ed-ex-list');
+  if (!cont) return;
+  if (!prog.exercises.length) {
+    cont.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--text3);font-size:13px">No exercises yet — tap + Add</div>`;
+    return;
+  }
+  cont.innerHTML = prog.exercises.map((ex,i) => `
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px">
+      <div style="display:flex;gap:10px;margin-bottom:8px">
+        <div style="flex:2">
+          <div class="input-label" style="margin-bottom:4px">Exercise name</div>
+          <input class="num-input" style="text-align:left;font-size:14px" value="${ex.name}"
+            oninput="edUpdEx('${ex.id}','name',this.value)" placeholder="e.g. Squat">
+        </div>
+        <div style="flex:1">
+          <div class="input-label" style="margin-bottom:4px">Sets × Reps</div>
+          <input class="num-input" style="text-align:left;font-size:14px" value="${ex.sets}"
+            oninput="edUpdEx('${ex.id}','sets',this.value)" placeholder="3×8">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-end">
+        <div style="flex:1">
+          <div class="input-label" style="margin-bottom:4px">Note</div>
+          <input class="num-input" style="text-align:left;font-size:13px" value="${ex.note||''}"
+            oninput="edUpdEx('${ex.id}','note',this.value)" placeholder="optional">
+        </div>
+        <button onclick="edRmEx('${ex.id}')"
+          style="background:rgba(255,69,58,.1);color:var(--red);border:1px solid rgba(255,69,58,.2);border-radius:8px;padding:9px 12px;font-size:12px;font-weight:600;flex-shrink:0">
+          Remove
+        </button>
       </div>
     </div>`).join('');
-  document.getElementById('workout-home').style.display='none';
-  document.getElementById('workout-logger').style.display='block';
 }
 
-function closeLogger(){
-  document.getElementById('workout-home').style.display='block';
-  document.getElementById('workout-logger').style.display='none';
+function edUpdEx(exId, field, val) {
+  const prog = programs.find(p=>p.id===editProgId);
+  const ex = prog?.exercises.find(e=>e.id===exId);
+  if (ex) { ex[field]=val; sv('ah_progs',programs); }
 }
 
-function saveWorkout(){
-  const sets={};
-  logExs.forEach((ex,i)=>{const w=document.getElementById('w'+i)?.value,r=document.getElementById('r'+i)?.value;if(w||r)sets[ex]={w,r};});
-  workouts.push({id:Date.now(),name:curWorkout,date:new Date().toLocaleDateString('en',{month:'short',day:'numeric',year:'numeric'}),sets,notes:document.getElementById('logger-notes').value});
-  sv('ah2_workouts',workouts);
-  closeLogger();renderWorkout();
-  showToast('Workout saved 🏋');
+function edAddEx() {
+  const prog = programs.find(p=>p.id===editProgId);
+  if (!prog) return;
+  prog.exercises.push({ id:'e'+Date.now(), name:'', sets:'3×8', note:'' });
+  sv('ah_progs',programs);
+  renderEdExList(prog);
+  setTimeout(()=>{
+    const inputs = document.querySelectorAll('#ed-ex-list input');
+    if (inputs.length) inputs[inputs.length-3].focus();
+  },50);
 }
+
+function edRmEx(exId) {
+  const prog = programs.find(p=>p.id===editProgId);
+  if (!prog) return;
+  prog.exercises = prog.exercises.filter(e=>e.id!==exId);
+  sv('ah_progs',programs);
+  renderEdExList(prog);
+}
+
+function edSave() {
+  const prog = programs.find(p=>p.id===editProgId);
+  const nameEl = document.getElementById('ed-name');
+  if (prog && nameEl) { prog.name = nameEl.value.trim() || prog.name; sv('ah_progs',programs); }
+  wvShow('home'); renderWHome();
+  showToast('Program saved ✓');
+}
+
+function edDelete() {
+  if (!confirm('Delete this program?')) return;
+  programs = programs.filter(p=>p.id!==editProgId);
+  sv('ah_progs',programs);
+  wvShow('home'); renderWHome();
+}
+
+// ── Session Detail ─────────────────────────────────
+function openDetail(sessionId) {
+  const w = workouts.find(s=>s.id===sessionId);
+  if (!w) return;
+  const prog = programs.find(p=>p.id===w.progId);
+  const exMap = {};
+  prog?.exercises.forEach(e=>exMap[e.id]=e);
+  const cont = document.getElementById('wd-content');
+  if (!cont) return;
+  cont.innerHTML = `
+    <div class="page-eyebrow">${w.date}</div>
+    <div class="page-title" style="color:var(--orange);font-size:28px;margin-bottom:20px">${w.progName}</div>
+    ${Object.entries(w.sets||{}).map(([exId,sets])=>{
+      const ex = exMap[exId];
+      const name = ex?.name || exId;
+      const best = sets.reduce((a,s)=>Math.max(a,+s.weight||0),0);
+      const vol = sets.reduce((a,s)=>(+s.weight||0)*(+s.reps||0)+a,0);
+      return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="font-size:15px;font-weight:700">${name}</div>
+          <div style="text-align:right">
+            ${best>0?`<div style="font-size:13px;font-weight:700;color:var(--accent)">${best}kg top</div>`:''}
+            ${vol>0?`<div style="font-size:11px;color:var(--text3)">${vol}kg vol</div>`:''}
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:20px 1fr 1fr 1fr;gap:6px">
+          <div></div>
+          <div style="font-size:10px;font-weight:700;color:var(--text3);text-align:center;text-transform:uppercase">Weight</div>
+          <div style="font-size:10px;font-weight:700;color:var(--text3);text-align:center;text-transform:uppercase">Reps</div>
+          <div style="font-size:10px;font-weight:700;color:var(--text3);text-align:center;text-transform:uppercase">RPE</div>
+          ${sets.map((s,i)=>`
+            <div style="font-size:12px;font-weight:700;color:var(--text3);text-align:center;padding:6px 0">${i+1}</div>
+            <div style="background:var(--bg3);border-radius:7px;padding:8px;font-size:14px;font-weight:700;text-align:center">${s.weight||'—'}kg</div>
+            <div style="background:var(--bg3);border-radius:7px;padding:8px;font-size:14px;font-weight:700;text-align:center">${s.reps||'—'}</div>
+            <div style="background:var(--bg3);border-radius:7px;padding:8px;font-size:14px;font-weight:700;text-align:center;color:var(--text3)">${s.rpe||'—'}</div>`).join('')}
+        </div>
+      </div>`;
+    }).join('')}
+    ${w.notes?`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-top:4px">
+      <div class="input-label" style="margin-bottom:6px">Notes</div>
+      <div style="font-size:14px;color:var(--text2);line-height:1.6">${w.notes}</div>
+    </div>`:''}`;
+  wvShow('detail');
+}
+
 
 /* ── Mobility ────────────────────────────────────── */
 let curMob=null,mobChk={};
